@@ -1,0 +1,12 @@
+{
+  "sparkle_version": "2.10.1",
+  "seed_rule": "bytes 0..31",
+  "message_rule": "1,000,000 bytes, byte i = i % 251",
+  "public_key": "A6EHv/POEL4dcN0Y50vAmWfk1jCbpQ1fHdyGZBJVMbg=",
+  "message_sign_update_output": "sparkle:edSignature=\"pWkKAACW2TdavvGMC4yLrKWw2Cqvs9yVOKnpNcgcLsqp18CusZf+88KbqIdkyzhHUQ4Gktvpq8jHaNJPxtDUAA==\" length=\"1000000\"",
+  "feed_signature": "96sRosUG555u1mFWCxfKWiw/1Shcauf0pf2+SCMMu9y+rgc6URf/4QJYYiuPdSege2TNSDHBwbLMTh/QXaRrBw==",
+  "feed_length": 550,
+  "feed_verify_rc": 0,
+  "feed_tampered_verify_rc": 1,
+  "message_verify_rc": 0
+}

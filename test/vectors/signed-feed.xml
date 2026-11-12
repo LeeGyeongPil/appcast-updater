@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Example</title>
+    <item>
+      <title>1.3.0</title>
+      <pubDate>Wed, 12 Nov 2026 00:00:00 +0000</pubDate>
+      <sparkle:version>130</sparkle:version>
+      <sparkle:shortVersionString>1.3.0</sparkle:shortVersionString>
+      <enclosure url="https://downloads.example.com/Example-1.3.0.zip" sparkle:edSignature="AAAA" length="1" type="application/octet-stream"/>
+    </item>
+  </channel>
+</rss>
+<!-- sparkle-signatures:
+edSignature: 96sRosUG555u1mFWCxfKWiw/1Shcauf0pf2+SCMMu9y+rgc6URf/4QJYYiuPdSege2TNSDHBwbLMTh/QXaRrBw==
+length: 550
+-->
