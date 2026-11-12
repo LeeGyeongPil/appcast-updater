@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-12
+
+### Fixed
+
+- CI on Windows: the Sparkle test vectors were checked out with CRLF line endings
+  (Windows runners default to `core.autocrlf=true`), so the byte-for-byte signature
+  tests failed. A `.gitattributes` file now keeps LF everywhere and never converts
+  `test/vectors/` and `test/fixtures/`. No library or CLI behavior changed.
+
 ## [0.1.0] - 2026-11-12
 
 ### Added
@@ -27,5 +36,6 @@ All notable changes to this project are documented here. The format follows
 - Legacy 96-byte private keys are recognized: public key and verification work, signing exits with code 3.
 - Offline practice example (`dart run example/main.dart`).
 
-[Unreleased]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/LeeGyeongPil/appcast-updater/releases/tag/v0.1.0

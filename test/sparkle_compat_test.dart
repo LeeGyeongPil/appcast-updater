@@ -53,6 +53,16 @@ void main() {
     final message = Uint8List.fromList(List.generate(1000000, (i) => i % 251));
     final line = vector['message_sign_update_output'] as String;
 
+    // 벡터는 바이트 단위로 비교하므로 체크아웃이 줄바꿈을 CRLF 로 바꾸면 안 된다
+    // (Windows 러너의 core.autocrlf=true). .gitattributes 가 이를 막는다.
+    test('the feed vectors were checked out without CRLF', () {
+      for (final name in ['feed-body.xml', 'signed-feed.xml']) {
+        final bytes = File('test/vectors/$name').readAsBytesSync();
+        expect(bytes.contains(13), isFalse,
+            reason: 'test/vectors/$name has CR bytes; check .gitattributes');
+      }
+    });
+
     test('the vector file says Sparkle accepted both signatures', () {
       expect(vector['sparkle_version'], '2.10.1');
       expect(vector['message_verify_rc'], 0);
