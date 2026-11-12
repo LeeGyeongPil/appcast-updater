@@ -4,4 +4,4 @@
 
 If you find a security issue, please **do not open a public issue**. Use **Security → Report a vulnerability** in this repository to report it privately. We will reply after checking and announce the fix with a release.
 
-보안 범위: 이 패키지가 검증하는 것은 서명(Ed25519)·크기·sha256·다운그레이드이며, 피드 서명도 확인합니다. 설치 프로그램 실행은 0.1.1 범위 밖입니다. / Scope: this package verifies signatures (Ed25519), size, sha256 and downgrades, and the feed signature. Running installers is outside the scope of 0.1.1.
+보안 범위: 이 패키지가 검증하는 것은 서명(Ed25519)·크기·sha256·다운그레이드이며, 피드 서명도 확인합니다. 설치 프로그램 실행은 0.1.2 범위 밖입니다. / Scope: this package verifies signatures (Ed25519), size, sha256 and downgrades, and the feed signature. Running installers is outside the scope of 0.1.2.
