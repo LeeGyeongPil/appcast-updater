@@ -662,5 +662,14 @@ void main() {
       expect(r.code, 0);
       expect(r.out.trim(), 'appcast $packageVersion');
     });
+
+    // `appcast --version` prints packageVersion, so it must follow pubspec.yaml.
+    test('packageVersion matches the version in pubspec.yaml', () {
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+      final match =
+          RegExp(r'^version:\s*(\S+)\s*$', multiLine: true).firstMatch(pubspec);
+      expect(match, isNotNull, reason: 'pubspec.yaml has no version: line');
+      expect(packageVersion, match!.group(1));
+    });
   });
 }

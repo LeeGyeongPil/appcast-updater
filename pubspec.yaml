@@ -2,7 +2,7 @@ name: appcast_updater
 description: >-
   Sparkle-compatible appcast parsing, EdDSA signing and update verification in
   pure Dart, plus an appcast CLI that runs on Linux, Windows and macOS.
-version: 0.1.1
+version: 0.1.2
 homepage: https://github.com/LeeGyeongPil/appcast-updater
 repository: https://github.com/LeeGyeongPil/appcast-updater
 issue_tracker: https://github.com/LeeGyeongPil/appcast-updater/issues

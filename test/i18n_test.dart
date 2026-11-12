@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:appcast_updater/src/cli/cli.dart';
@@ -248,16 +249,24 @@ void main() {
     });
   });
 
+  // The child writes UTF-8. Process.run would otherwise decode with
+  // systemEncoding, which is the active code page on Windows (not UTF-8), so
+  // the Korean help text would not survive. Decode as UTF-8 on every OS.
+  // The first `dart run` compiles the executable, which can be slow on CI
+  // runners, hence the longer timeout.
   test('the CLI executable runs and honors --lang (process level)', () async {
     final r = await Process.run(Platform.resolvedExecutable,
-        ['run', 'appcast_updater:appcast', '--lang', 'ko', '--help']);
+        ['run', 'appcast_updater:appcast', '--lang', 'ko', '--help'],
+        stdoutEncoding: utf8, stderrEncoding: utf8);
     expect(r.exitCode, 0, reason: '${r.stderr}');
     expect(r.stdout as String, contains('사용법'));
     final e = await Process.run(Platform.resolvedExecutable,
-        ['run', 'appcast_updater:appcast', '--lang', 'en', '--help']);
+        ['run', 'appcast_updater:appcast', '--lang', 'en', '--help'],
+        stdoutEncoding: utf8, stderrEncoding: utf8);
     expect(e.stdout as String, contains('Usage'));
     final bad = await Process.run(Platform.resolvedExecutable,
-        ['run', 'appcast_updater:appcast', '--nope']);
+        ['run', 'appcast_updater:appcast', '--nope'],
+        stdoutEncoding: utf8, stderrEncoding: utf8);
     expect(bad.exitCode, 2);
-  });
+  }, timeout: const Timeout(Duration(minutes: 3)));
 }

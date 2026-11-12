@@ -8,10 +8,32 @@ import 'package:test/test.dart';
 /// printed or compared.
 Directory tempDir() {
   final dir = Directory.systemTemp.createTempSync('appcast_test_');
-  addTearDown(() {
-    if (dir.existsSync()) dir.deleteSync(recursive: true);
-  });
+  addTearDown(() => _removeTempDir(dir));
   return dir;
+}
+
+/// Removes a test folder.
+///
+/// On Windows a file that is still open (or being scanned by antivirus)
+/// cannot be deleted, so a cleanup failure there is retried a few times and
+/// then ignored: the folder lives in the system temp folder and a leftover
+/// must not fail the test. On other OSes a failure is a real bug and is
+/// reported as is.
+Future<void> _removeTempDir(Directory dir) async {
+  if (!Platform.isWindows) {
+    if (dir.existsSync()) dir.deleteSync(recursive: true);
+    return;
+  }
+  for (var attempt = 1; attempt <= 5; attempt++) {
+    if (!dir.existsSync()) return;
+    try {
+      dir.deleteSync(recursive: true);
+      return;
+    } on FileSystemException {
+      // Wait a little for the handle to close, then try again.
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    }
+  }
 }
 
 /// One `<item>` as feed text.
