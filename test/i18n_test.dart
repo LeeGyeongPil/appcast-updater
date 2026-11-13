@@ -232,6 +232,8 @@ void main() {
         'nope',
         'LANG',
         'sparkle',
+        'keep',
+        'minimumAutoupdateVersion',
         'http',
         'https',
       };

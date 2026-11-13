@@ -58,6 +58,9 @@ Sparkle sign_update 와 똑같이 sparkle:edSignature="..." length="..." 를 출
   --installer-arguments <글>    설치 프로그램에 넘길 인자
   --pub-date <날짜>             RFC 822 또는 ISO 8601 날짜 (기본: 지금)
   --replace                     같은 버전·os 항목을 교체
+  --keep <N>                    os·채널별 최신 N개만 유지
+                                (기본: 전부 유지, 분기 항목 유지:
+                                minimumAutoupdateVersion)
   --sign-feed                   끝나고 피드에도 서명
 피드가 바뀌면 피드 서명이 지워집니다. --sign-feed 를 쓰거나 이어서 sign-feed 를 실행하세요.''',
   'help.sign-feed': '''사용법: appcast sign-feed <appcast.xml> --ed-key-file <파일|->
@@ -90,6 +93,7 @@ Sparkle sign_update 와 똑같이 sparkle:edSignature="..." length="..." 를 출
   'err.extra_arg': '필요 없는 인자입니다: {arg}.',
   'err.bad_lang': '지원하지 않는 언어 "{value}" 입니다. en 또는 ko 를 쓰세요.',
   'err.bad_int': '{option} 옵션에는 정수가 필요합니다. 받은 값: "{value}".',
+  'err.bad_keep': '--keep 옵션에는 1 이상의 정수가 필요합니다. 받은 값: "{value}".',
   'err.bad_date':
       '{option} 옵션에는 2026-11-12T00:00:00Z 같은 날짜가 필요합니다. 받은 값: "{value}".',
   'err.file_not_found': '파일을 찾을 수 없습니다: {path}',
@@ -122,6 +126,7 @@ Sparkle sign_update 와 똑같이 sparkle:edSignature="..." length="..." 를 출
   'fail.verify_invalid': '서명이 파일과 맞지 않습니다.',
   'fail.verify_malformed': '서명이 64바이트의 올바른 base64 가 아닙니다.',
   'ok.added': '{path} 에 {version} ({os}) 을(를) 추가했습니다.',
+  'ok.pruned': '{path} 에서 오래된 항목 {count}개를 지웠습니다 (os/채널별 {keep}개 유지).',
   'warn.feed_unsigned':
       '피드가 바뀌어서 피드 서명을 지웠습니다. "appcast sign-feed {path}" 를 실행하세요 (또는 --sign-feed 사용).',
   'ok.feed_signed': '{path} 에 서명했습니다.',

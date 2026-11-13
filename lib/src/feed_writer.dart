@@ -162,6 +162,43 @@ class AppcastWriter {
     }
   }
 
+  /// Removes old items, keeping the newest [keep] per os and channel.
+  ///
+  /// Items are grouped by os (case-insensitive) and `sparkle:channel` (none =
+  /// default channel) and ordered by version with [compareVersions], not by
+  /// their position in the file. Items that cannot be parsed and items with a
+  /// `sparkle:minimumAutoupdateVersion` element are neither counted nor
+  /// removed. Returns the number of removed items.
+  ///
+  /// Throws [ArgumentError] if [keep] is less than 1.
+  int prune({required int keep}) {
+    if (keep < 1) {
+      throw ArgumentError.value(keep, 'keep', 'must be at least 1');
+    }
+    final groups = <String, List<(XmlElement, AppcastItem)>>{};
+    for (final el in _channel.findElements('item')) {
+      final item = tryParseItemElement(el);
+      if (item == null) continue;
+      final hasFloor = el.childElements.any((c) =>
+          c.name.local == 'minimumAutoupdateVersion' &&
+          c.name.namespaceUri == sparkleNamespace);
+      if (hasFloor) continue;
+      final key = '${(item.enclosure.os ?? '').toLowerCase()}\u0000'
+          '${item.channel ?? ''}';
+      groups.putIfAbsent(key, () => []).add((el, item));
+    }
+    var removed = 0;
+    for (final entries in groups.values) {
+      // stable sort, newest first
+      entries.sort((a, b) => compareVersions(b.$2.version, a.$2.version));
+      for (final e in entries.skip(keep)) {
+        _removeWithIndent(e.$1);
+        removed++;
+      }
+    }
+    return removed;
+  }
+
   void _removeWithIndent(XmlElement el) {
     final parent = el.parent!;
     final at = parent.children.indexOf(el);

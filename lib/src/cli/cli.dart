@@ -21,7 +21,7 @@ import 'i18n.dart';
 import 'io_util.dart';
 
 /// Version printed by `appcast --version`. Keep in sync with pubspec.yaml.
-const String packageVersion = '0.1.2';
+const String packageVersion = '0.2.0';
 
 /// Exit codes.
 const int exitOk = 0;
@@ -70,6 +70,7 @@ const Map<String, CommandSpec> _commands = {
         '--notes-url',
         '--installer-arguments',
         '--pub-date',
+        '--keep',
         _keyOption,
       },
       flags: {'--critical', '--replace', '--sign-feed'},
@@ -383,6 +384,13 @@ class _Context {
     final pubDate = p.option('--pub-date') == null
         ? null
         : _dateOption('--pub-date', p.option('--pub-date')!);
+    int? keep;
+    if (p.option('--keep') != null) {
+      keep = _intOption(p, '--keep');
+      if (keep < 1) {
+        throw UsageError('err.bad_keep', {'value': p.option('--keep')!});
+      }
+    }
 
     final key = await _privateKey(p);
     final release = await _readFile(releasePath);
@@ -437,6 +445,7 @@ class _Context {
           },
           exitFailed);
     }
+    final pruned = keep == null ? 0 : writer.prune(keep: keep);
     var bytes = Uint8List.fromList(utf8.encode(writer.toXmlString()));
     final signAgain = p.flag('--sign-feed');
     if (signAgain) bytes = await SignedFeed.sign(bytes, key);
@@ -446,6 +455,13 @@ class _Context {
       'os': p.option('--os') ?? m.t('word.any_os'),
       'path': feedPath,
     }));
+    if (pruned > 0) {
+      out.writeln(m.t('ok.pruned', {
+        'count': '$pruned',
+        'path': feedPath,
+        'keep': '$keep',
+      }));
+    }
     if (hadSignature && !signAgain) {
       err.writeln(m.t('warn.feed_unsigned', {'path': feedPath}));
     }

@@ -60,6 +60,9 @@ Options:
   --installer-arguments <text>  Arguments for the installer
   --pub-date <date>             RFC 822 or ISO 8601 date (default: now)
   --replace                     Replace an item with the same version and os
+  --keep <N>                    Keep only the newest N items per os and channel
+                                (default: keep all; minimumAutoupdateVersion
+                                items are kept)
   --sign-feed                   Sign the feed afterwards
 A feed signature is removed when the feed changes; use --sign-feed or run sign-feed afterwards.''',
   'help.sign-feed':
@@ -94,6 +97,8 @@ Options:
   'err.extra_arg': 'Unexpected argument: {arg}.',
   'err.bad_lang': 'Unsupported language "{value}". Use en or ko.',
   'err.bad_int': 'Option {option} needs a whole number, got "{value}".',
+  'err.bad_keep':
+      'Option --keep needs a whole number of 1 or more, got "{value}".',
   'err.bad_date':
       'Option {option} needs a date such as 2026-11-12T00:00:00Z, got "{value}".',
   'err.file_not_found': 'File not found: {path}',
@@ -132,6 +137,8 @@ Options:
   'fail.verify_invalid': 'The signature does NOT match the file.',
   'fail.verify_malformed': 'The signature is not base64 of 64 bytes.',
   'ok.added': 'Added {version} ({os}) to {path}.',
+  'ok.pruned':
+      'Removed {count} old item(s) from {path} (kept {keep} per os/channel).',
   'warn.feed_unsigned':
       'The feed signature was removed because the feed changed. Run "appcast sign-feed {path}" (or use --sign-feed).',
   'ok.feed_signed': 'Signed {path}.',
