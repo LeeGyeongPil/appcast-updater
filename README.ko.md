@@ -4,7 +4,7 @@
 
 ## 소개
 
-순수 Dart 로 Sparkle 호환 appcast 읽기, Ed25519 서명, 업데이트 검증을 해 주는 패키지이고, Linux·Windows·macOS 어디서나 릴리스에 서명하고 피드를 편집하는 `appcast` 명령줄 도구도 함께 있습니다. [Sparkle](https://sparkle-project.org/) 과 같은 피드 형식·같은 키를 쓰므로, 이미 Sparkle 로 macOS 앱을 배포하는 Flutter 데스크톱 앱이 같은 피드로 Windows 업데이트도 확인하고 검증할 수 있습니다. 0.1.2 는 업데이트를 확인하고, 고르고, 검증하는 데까지입니다. 설치는 아직 하지 않습니다([로드맵](#로드맵)과 [알려진 한계](#알려진-한계) 참고).
+순수 Dart 로 Sparkle 호환 appcast 읽기, Ed25519 서명, 업데이트 검증을 해 주는 패키지이고, Linux·Windows·macOS 어디서나 릴리스에 서명하고 피드를 편집하는 `appcast` 명령줄 도구도 함께 있습니다. [Sparkle](https://sparkle-project.org/) 과 같은 피드 형식·같은 키를 쓰므로, 이미 Sparkle 로 macOS 앱을 배포하는 Flutter 데스크톱 앱이 같은 피드로 Windows 업데이트도 확인하고 검증할 수 있습니다. 0.2.0 는 업데이트를 확인하고, 고르고, 검증하는 데까지입니다. 설치는 아직 하지 않습니다([로드맵](#로드맵)과 [알려진 한계](#알려진-한계) 참고).
 
 ![오프라인 연습 실행: 릴리스 두 개에 서명하고, 업데이트를 찾고, 정상 파일은 받아들이고 나쁜 파일 셋은 거절한다](docs/images/01-practice-run.png)
 
@@ -21,7 +21,7 @@ Sparkle 의 `sign_update`·`generate_appcast` 도구는 macOS 바이너리라서
 | [auto_updater](https://pub.dev/packages/auto_updater) 1.0.0 | Sparkle appcast (macOS 는 Sparkle, Windows 는 WinSparkle 을 감쌈) | 예 | `sign_update` 가 macOS 전용 | 아니요, 네이티브 라이브러리가 함 |
 | [desktop_updater](https://pub.dev/packages/desktop_updater) 3.2.11 | 자체 JSON 매니페스트 | 아니요 | 자체 CLI | 자체 체인 |
 | [upgrader](https://pub.dev/packages/upgrader) 13.8.0 | 스토어 안내용으로 appcast 를 읽음 | 해당 없음 | 해당 없음 | 아니요, `edSignature` 필드를 읽기만 함 |
-| **appcast_updater** 0.1.2 | Sparkle appcast | 예(확인함, [호환성](#호환성) 참고) | 예, `appcast` CLI | 예, `Updater` / `UpdateVerifier` |
+| **appcast_updater** 0.2.0 | Sparkle appcast | 예(확인함, [호환성](#호환성) 참고) | 예, `appcast` CLI | 예, `Updater` / `UpdateVerifier` |
 
 잘 맞는 경우: Sparkle 로 macOS 앱을 배포하고(또는 배포할 계획이고) Windows 에도 같은 피드·같은 키를 쓰고 싶을 때, Linux·Windows 러너에서 릴리스에 서명하고 싶을 때, 업데이트 확인을 읽고 테스트할 수 있는 순수 Dart 코드로 두고 싶을 때.
 
@@ -52,7 +52,7 @@ appcast --version
 ```
 
 ```text
-appcast 0.1.2
+appcast 0.2.0
 ```
 
 셸이 `appcast` 명령을 찾지 못한다고 하면 pub 캐시의 `bin` 폴더가 아직 `PATH` 에 없는 것입니다(`activate` 가 `Pub installs executables into ..., which is not on your path` 라고 경고합니다). `$HOME/.pub-cache/bin` 을 `PATH` 에 추가하고(Windows: `%LOCALAPPDATA%\Pub\Cache\bin`) 터미널을 새로 열거나, `appcast` 대신 `dart pub global run appcast_updater:appcast` 로 실행하세요.
@@ -184,10 +184,12 @@ Rejected: signatureInvalid
 | `appcast pubkey --ed-key-file <file\|->` | 공개키(`SUPublicEDKey` 값) 출력. |
 | `appcast sign <file> --ed-key-file <file\|-> [-p]` | `sparkle:edSignature="..." length="..."` 출력(Sparkle `sign_update` 와 같은 문장). `-p` 는 서명만 출력. |
 | `appcast verify <file> <signature> --public-key <b64> \| --ed-key-file <file\|->` | 서명이 파일과 맞으면 종료 코드 0. |
-| `appcast add <appcast.xml> --file ... --url ... --version ...` | 릴리스에 서명하고 피드 맨 위에 항목 추가(피드가 없으면 생성). 옵션: `--short-version`, `--os`, `--channel`, `--min-system`, `--max-system`, `--phased-interval`, `--critical`, `--critical-below`, `--notes-url`, `--installer-arguments`, `--pub-date`, `--replace`, `--sign-feed`. |
+| `appcast add <appcast.xml> --file ... --url ... --version ...` | 릴리스에 서명하고 피드 맨 위에 항목 추가(피드가 없으면 생성). 옵션: `--short-version`, `--os`, `--channel`, `--min-system`, `--max-system`, `--phased-interval`, `--critical`, `--critical-below`, `--notes-url`, `--installer-arguments`, `--pub-date`, `--replace`, `--keep`, `--sign-feed`. |
 | `appcast sign-feed <appcast.xml> --ed-key-file <file\|->` | 피드 서명을 붙이거나 교체. |
 | `appcast verify-feed <appcast.xml\|url> --public-key <b64> \| --ed-key-file <file\|->` | 피드 서명이 올바르면 종료 코드 0. `--ed-key-file` 을 쓰면 개인키에서 공개키를 꺼냅니다. |
 | `appcast check <appcast.xml\|url> --current <v> --os <name> --explain` | 이 설치가 받을 업데이트와, 나머지 항목이 고르지 않은 이유 출력. |
+
+`add --keep N` 은 항목을 추가한 뒤 피드를 정리합니다. os·채널별로 최신 N개(파일 안 위치가 아니라 버전 순)만 남기고 지운 개수를 출력합니다. 방금 추가한 항목도 최신 N개 밖이면 바로 지워집니다. `--keep` 이 없으면 아무것도 지우지 않습니다. 주의: `critical` 항목도 다른 항목과 똑같이 개수에 들어가므로 더 새로운 항목이 N개 쌓이면 지워질 수 있고, 그 항목을 거쳐야 하는 오래된 설치는 갈 곳을 잃습니다. `sparkle:minimumAutoupdateVersion` 요소가 있는 항목은 세지도 지우지도 않지만, Sparkle `generate_appcast --maximum-versions` 와 달리 그 밖의 업그레이드 경로는 계산하지 않습니다.
 
 키를 표준 입력으로 읽으려면 `--ed-key-file -` 를 씁니다. CI 비밀값에 알맞습니다: `echo "$RELEASE_KEY" | appcast sign app.exe --ed-key-file -`.
 
@@ -229,7 +231,7 @@ Rejected: signatureInvalid
 | `UpdateVerifier` | 내려받은 파일 검증: 크기, 서명, sha256, 다운그레이드. | `publicKey`, `allowUnsigned` | `verifyFile(file, item, currentVersion:)`, 실패 시 `UpdateVerificationException`(`reason` 은 `VerifyFailure`) |
 | `SignedFeed` | 피드 서명 붙이기·검증·떼기. | 원본 바이트, 키 | `sign`, `verify`(본문 반환), `strip`, `hasSignature`, 실패 시 `FeedSignatureException`(`FeedFailure`) |
 | `Appcast`, `AppcastItem`, `Enclosure`, `ItemError` | 피드 파싱. 형식이 잘못된 항목은 피드 전체를 실패시키지 않고 목록으로 보고. | XML 문자열 또는 바이트 | `Appcast.parse`, `Appcast.parseBytes`, 실패 시 `AppcastFormatException` |
-| `AppcastWriter` | 피드 생성·항목 추가(기존 네임스페이스 접두를 유지). | | `createEmpty`, `parse`, `addItem`, `toXmlString`, 중복 시 `DuplicateItemException` |
+| `AppcastWriter` | 피드 생성·항목 추가(기존 네임스페이스 접두를 유지). | | `createEmpty`, `parse`, `addItem`, `prune(keep:)`, `toXmlString`, 중복 시 `DuplicateItemException` |
 | `EdKeyPair`, `EdPrivateKey`, `EdPublicKey` | 키. 옛 96바이트 키를 포함해 Sparkle 키 파일을 읽음(공개키 추출·검증만). | 시드 또는 키 파일 내용 | 실패 시 `KeyFormatException` |
 | `signBytes`, `signFile`, `verifyBytes`, `SparkleSignature` | 바이트·파일에 대한 Ed25519. `toSparkleAttributes()` 는 `sign_update` 줄 출력. | 데이터, 키 | base64 서명 / `SparkleSignature` / `bool` |
 | `compareVersions` | Sparkle `SUStandardVersionComparator` 규칙의 버전 비교. | 문자열 둘 | 음수·`0`·양수 `int` |
@@ -334,7 +336,7 @@ flowchart LR
 
 ## 로드맵
 
-0.1.2 에는 없으니 아직 기대지 마세요.
+0.2.0 에는 없으니 아직 기대지 마세요.
 
 - **Windows 설치·재실행**(Inno Setup·NSIS·MSI 조용한 설치 인자, 앱 종료 대기, 분리 실행, 결과 확인)과 옛 96바이트 개인키로 서명하기(지금은 종료 코드 3).
 - **macOS Sparkle 2 안내와 릴리스 워크플로**(`SUFeedURL`, `SUPublicEDKey`, `SURequireSignedFeed`, Linux 러너 릴리스 작업).
@@ -344,7 +346,7 @@ flowchart LR
 ## 알려진 한계
 
 - 서명과 검증은 파일 전체를 메모리에 올립니다(200 MB 설치 파일은 검사하는 동안 약 200 MB 메모리가 필요합니다). 크기를 먼저 비교하므로 길이가 다른 파일은 읽지 않습니다. 스트리밍은 이후 버전 계획입니다.
-- 설치와 재실행은 0.1.2 범위 밖입니다. 설치 프로그램은 앱이 실행합니다.
+- 설치와 재실행은 0.2.0 범위 밖입니다. 설치 프로그램은 앱이 실행합니다.
 - 실제 `https://` 내려받기는 자동 테스트로 확인하지 않았습니다(테스트는 `file://` 과 로컬 `127.0.0.1` 서버를 씁니다).
 - 스크린샷은 명령을 먼저, 출력을 나중에 보여 주며, `sign` 과 `--lang ko --help` 출력은 텍스트로만 있습니다.
 - 이 패키지는 코드 서명이나 공증을 하지 않습니다. 릴리스 파이프라인에서 각 플랫폼 도구로 하세요.

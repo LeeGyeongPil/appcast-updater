@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-13
+
+### Added
+
+- `appcast add --keep N` keeps only the newest N items per os and channel after adding and reports how many items it removed (English and Korean). Without the option nothing changes. Items with `sparkle:minimumAutoupdateVersion` and items that cannot be parsed are neither counted nor removed.
+- `AppcastWriter.prune(keep: N)` does the same in code and returns the number of removed items (`ArgumentError` if `keep` is below 1).
+
 ## [0.1.2] - 2026-11-12
 
 ### Fixed
@@ -60,7 +67,8 @@ No library or CLI behavior changed.
 - Legacy 96-byte private keys are recognized: public key and verification work, signing exits with code 3.
 - Offline practice example (`dart run example/main.dart`).
 
-[Unreleased]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/LeeGyeongPil/appcast-updater/releases/tag/v0.1.0
