@@ -4,7 +4,7 @@
 
 ## What it is
 
-Sparkle-compatible appcast parsing, Ed25519 signing and update verification in pure Dart, plus an `appcast` command line that signs releases and edits feeds on Linux, Windows and macOS. It uses the same feed format and the same keys as [Sparkle](https://sparkle-project.org/), so a Flutter desktop app that already ships on macOS with Sparkle can check and verify Windows updates from the same feed. Version 0.2.0 covers checking, choosing and verifying an update. It does not install anything yet (see [Roadmap](#roadmap) and [Known limitations](#known-limitations)).
+Sparkle-compatible appcast parsing, Ed25519 signing and update verification in pure Dart, plus an `appcast` command line that signs releases and edits feeds on Linux, Windows and macOS. It uses the same feed format and the same keys as [Sparkle](https://sparkle-project.org/), so a Flutter desktop app that already ships on macOS with Sparkle can check and verify Windows updates from the same feed. Version 0.3.0 covers checking, choosing and verifying an update. It does not install anything yet (see [Roadmap](#roadmap) and [Known limitations](#known-limitations)).
 
 ![The offline practice run: sign two releases, find an update, accept the good file, reject three bad ones](docs/images/01-practice-run.png)
 
@@ -21,7 +21,7 @@ How it compares with other Dart and Flutter options (read from each project's pa
 | [auto_updater](https://pub.dev/packages/auto_updater) 1.0.0 | Sparkle appcast (wraps Sparkle on macOS, WinSparkle on Windows) | Yes | `sign_update` is macOS only | No, done by the native library |
 | [desktop_updater](https://pub.dev/packages/desktop_updater) 3.2.11 | Its own JSON manifest | No | Its own CLI | Its own chain |
 | [upgrader](https://pub.dev/packages/upgrader) 13.8.0 | Reads an appcast for a store-listing prompt | n/a | n/a | No, it only reads the `edSignature` field |
-| **appcast_updater** 0.2.0 | Sparkle appcast | Yes (checked, see [Compatibility](#compatibility)) | Yes, `appcast` CLI | Yes, `Updater` / `UpdateVerifier` |
+| **appcast_updater** 0.3.0 | Sparkle appcast | Yes (checked, see [Compatibility](#compatibility)) | Yes, `appcast` CLI | Yes, `Updater` / `UpdateVerifier` |
 
 Good fit: you ship (or plan to ship) a macOS app with Sparkle and want the same feed and key for Windows; you want to sign releases on a Linux or Windows runner; or you want update checks to be plain Dart code you can read and test.
 
@@ -52,7 +52,7 @@ appcast --version
 ```
 
 ```text
-appcast 0.2.0
+appcast 0.3.0
 ```
 
 If the shell says it cannot find the `appcast` command, the pub cache `bin` folder is not on your `PATH` yet (`activate` warns about this: `Pub installs executables into ..., which is not on your path`). Add `$HOME/.pub-cache/bin` to `PATH` (Windows: `%LOCALAPPDATA%\Pub\Cache\bin`) and open a new terminal, or call the tool as `dart pub global run appcast_updater:appcast` instead of `appcast`.
@@ -271,7 +271,7 @@ dart run example/main.dart
 7. rejected: feed signature (the feed was changed after signing)
 ```
 
-This is a practice (mock) mode: the "download server" is a folder read through `file://`, and no installer is started. Keys, signatures, hashes and every rejection are real computations. The practice example prints English only.
+This is a practice (mock) mode: the "download server" is a folder read through `file://`, and no installer is started. Keys, signatures, hashes and every rejection are real computations. The practice example follows the same order: `--lang en|ko`, then `APPCAST_UPDATER_LANG`, then `LC_ALL`, `LC_MESSAGES`, `LANG`.
 
 ## How verification works
 
@@ -336,7 +336,7 @@ Limits to know:
 
 ## Roadmap
 
-Not in 0.2.0, so do not rely on it yet:
+Not in 0.3.0, so do not rely on it yet:
 
 - **Windows install and relaunch** (Inno Setup, NSIS and MSI silent arguments, wait for the app to exit, detached installer, result check) and signing with legacy 96-byte private keys (they exit with code 3 today).
 - **macOS Sparkle 2 notes and a release workflow** (`SUFeedURL`, `SUPublicEDKey`, `SURequireSignedFeed`, a Linux-runner release job).
@@ -346,14 +346,14 @@ Today the package ends at "a verified file on disk"; starting the installer is u
 ## Known limitations
 
 - Signing and verifying read the whole file into memory (a 200 MB installer needs about 200 MB of memory while it is checked). The size is compared first, so a file of the wrong length is not read. Streaming is planned for a later version.
-- Installing and relaunching are not part of 0.2.0; your app starts the installer.
+- Installing and relaunching are not part of 0.3.0; your app starts the installer.
 - Real `https://` downloads are not covered by automated tests (the tests use `file://` and a local `127.0.0.1` server).
 - Screenshots show commands first and outputs after; the `sign` and `--lang ko --help` outputs are given as text only.
 - The package does no code signing or notarization. Do those with the platform tools in your release pipeline.
 
 ## Language
 
-The command line speaks English and Korean. The order of precedence is `--lang en|ko`, then the `APPCAST_UPDATER_LANG` environment variable, then `LC_ALL`, `LC_MESSAGES`, `LANG` (Korean if the value starts with `ko`, otherwise English). The command output shown in this README is the English text; on a Korean system add `--lang en` to see the same lines.
+The command line speaks English and Korean. The order of precedence is `--lang en|ko`, then the `APPCAST_UPDATER_LANG` environment variable, then `LC_ALL`, `LC_MESSAGES`, `LANG` (Korean if the value starts with `ko`, otherwise English). The command output shown in this README is the English text; on a Korean system add `--lang en` to see the same lines. The practice example (`dart run example/main.dart`) uses the same rules.
 
 ```bash
 APPCAST_UPDATER_LANG=ko appcast check feed/appcast.xml --current 110 --os windows-x64

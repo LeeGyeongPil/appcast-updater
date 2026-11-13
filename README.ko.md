@@ -4,9 +4,9 @@
 
 ## 소개
 
-순수 Dart 로 Sparkle 호환 appcast 읽기, Ed25519 서명, 업데이트 검증을 해 주는 패키지이고, Linux·Windows·macOS 어디서나 릴리스에 서명하고 피드를 편집하는 `appcast` 명령줄 도구도 함께 있습니다. [Sparkle](https://sparkle-project.org/) 과 같은 피드 형식·같은 키를 쓰므로, 이미 Sparkle 로 macOS 앱을 배포하는 Flutter 데스크톱 앱이 같은 피드로 Windows 업데이트도 확인하고 검증할 수 있습니다. 0.2.0 는 업데이트를 확인하고, 고르고, 검증하는 데까지입니다. 설치는 아직 하지 않습니다([로드맵](#로드맵)과 [알려진 한계](#알려진-한계) 참고).
+순수 Dart 로 Sparkle 호환 appcast 읽기, Ed25519 서명, 업데이트 검증을 해 주는 패키지이고, Linux·Windows·macOS 어디서나 릴리스에 서명하고 피드를 편집하는 `appcast` 명령줄 도구도 함께 있습니다. [Sparkle](https://sparkle-project.org/) 과 같은 피드 형식·같은 키를 쓰므로, 이미 Sparkle 로 macOS 앱을 배포하는 Flutter 데스크톱 앱이 같은 피드로 Windows 업데이트도 확인하고 검증할 수 있습니다. 0.3.0 은 업데이트를 확인하고, 고르고, 검증하는 데까지입니다. 설치는 아직 하지 않습니다([로드맵](#로드맵)과 [알려진 한계](#알려진-한계) 참고).
 
-![오프라인 연습 실행: 릴리스 두 개에 서명하고, 업데이트를 찾고, 정상 파일은 받아들이고 나쁜 파일 셋은 거절한다](docs/images/01-practice-run.png)
+![오프라인 연습 실행: 릴리스 두 개에 서명하고, 업데이트를 찾고, 정상 파일은 받아들이고 나쁜 파일 셋은 거절한다](docs/images/01-practice-run.ko.png)
 
 *`dart run example/main.dart` 는 전 과정을 오프라인으로 돌립니다. 진짜 키, 진짜 서명, 그리고 거절되는 공격 세 가지.*
 
@@ -21,7 +21,7 @@ Sparkle 의 `sign_update`·`generate_appcast` 도구는 macOS 바이너리라서
 | [auto_updater](https://pub.dev/packages/auto_updater) 1.0.0 | Sparkle appcast (macOS 는 Sparkle, Windows 는 WinSparkle 을 감쌈) | 예 | `sign_update` 가 macOS 전용 | 아니요, 네이티브 라이브러리가 함 |
 | [desktop_updater](https://pub.dev/packages/desktop_updater) 3.2.11 | 자체 JSON 매니페스트 | 아니요 | 자체 CLI | 자체 체인 |
 | [upgrader](https://pub.dev/packages/upgrader) 13.8.0 | 스토어 안내용으로 appcast 를 읽음 | 해당 없음 | 해당 없음 | 아니요, `edSignature` 필드를 읽기만 함 |
-| **appcast_updater** 0.2.0 | Sparkle appcast | 예(확인함, [호환성](#호환성) 참고) | 예, `appcast` CLI | 예, `Updater` / `UpdateVerifier` |
+| **appcast_updater** 0.3.0 | Sparkle appcast | 예(확인함, [호환성](#호환성) 참고) | 예, `appcast` CLI | 예, `Updater` / `UpdateVerifier` |
 
 잘 맞는 경우: Sparkle 로 macOS 앱을 배포하고(또는 배포할 계획이고) Windows 에도 같은 피드·같은 키를 쓰고 싶을 때, Linux·Windows 러너에서 릴리스에 서명하고 싶을 때, 업데이트 확인을 읽고 테스트할 수 있는 순수 Dart 코드로 두고 싶을 때.
 
@@ -52,7 +52,7 @@ appcast --version
 ```
 
 ```text
-appcast 0.2.0
+appcast 0.3.0
 ```
 
 셸이 `appcast` 명령을 찾지 못한다고 하면 pub 캐시의 `bin` 폴더가 아직 `PATH` 에 없는 것입니다(`activate` 가 `Pub installs executables into ..., which is not on your path` 라고 경고합니다). `$HOME/.pub-cache/bin` 을 `PATH` 에 추가하고(Windows: `%LOCALAPPDATA%\Pub\Cache\bin`) 터미널을 새로 열거나, `appcast` 대신 `dart pub global run appcast_updater:appcast` 로 실행하세요.
@@ -262,16 +262,16 @@ print(sig.toSparkleAttributes()); // sparkle:edSignature="..." length="5000"
 **예 3. 연습 실행.** [`example/main.dart`](example/main.dart) 는 `build/example-playground/` 안에서 전부 오프라인으로 돌며 반복 실행해도 안전합니다.
 
 ```bash
-dart run example/main.dart
+dart run example/main.dart --lang ko
 ```
 
 ```text
-5. rejected: signatureInvalid (one byte of the file was changed)
-6. rejected: downgrade (installed build 140 is newer than 130)
-7. rejected: feed signature (the feed was changed after signing)
+5. 거절됨: signatureInvalid (파일의 1바이트를 바꿨습니다)
+6. 거절됨: downgrade (설치된 빌드 140 이 130 보다 최신입니다)
+7. 거절됨: 피드 서명 (서명 뒤에 피드가 바뀌었습니다)
 ```
 
-연습용 목(mock) 모드입니다. "내려받기 서버"는 `file://` 로 읽는 폴더이고 설치 파일은 실행하지 않습니다. 키·서명·해시와 모든 거절은 실제 계산입니다. 예제 출력은 영어로만 나옵니다.
+연습용 목(mock) 모드입니다. "내려받기 서버"는 `file://` 로 읽는 폴더이고 설치 파일은 실행하지 않습니다. 키·서명·해시와 모든 거절은 실제 계산입니다. 예제도 CLI 와 같은 순서로 언어를 고릅니다: `--lang en|ko`, `APPCAST_UPDATER_LANG`, `LC_ALL`·`LC_MESSAGES`·`LANG` (값이 `ko` 로 시작하면 한국어, 아니면 영어).
 
 ## 검증이 동작하는 방식
 
@@ -336,7 +336,7 @@ flowchart LR
 
 ## 로드맵
 
-0.2.0 에는 없으니 아직 기대지 마세요.
+0.3.0 에는 없으니 아직 기대지 마세요.
 
 - **Windows 설치·재실행**(Inno Setup·NSIS·MSI 조용한 설치 인자, 앱 종료 대기, 분리 실행, 결과 확인)과 옛 96바이트 개인키로 서명하기(지금은 종료 코드 3).
 - **macOS Sparkle 2 안내와 릴리스 워크플로**(`SUFeedURL`, `SUPublicEDKey`, `SURequireSignedFeed`, Linux 러너 릴리스 작업).
@@ -346,14 +346,14 @@ flowchart LR
 ## 알려진 한계
 
 - 서명과 검증은 파일 전체를 메모리에 올립니다(200 MB 설치 파일은 검사하는 동안 약 200 MB 메모리가 필요합니다). 크기를 먼저 비교하므로 길이가 다른 파일은 읽지 않습니다. 스트리밍은 이후 버전 계획입니다.
-- 설치와 재실행은 0.2.0 범위 밖입니다. 설치 프로그램은 앱이 실행합니다.
+- 설치와 재실행은 0.3.0 범위 밖입니다. 설치 프로그램은 앱이 실행합니다.
 - 실제 `https://` 내려받기는 자동 테스트로 확인하지 않았습니다(테스트는 `file://` 과 로컬 `127.0.0.1` 서버를 씁니다).
 - 스크린샷은 명령을 먼저, 출력을 나중에 보여 주며, `sign` 과 `--lang ko --help` 출력은 텍스트로만 있습니다.
 - 이 패키지는 코드 서명이나 공증을 하지 않습니다. 릴리스 파이프라인에서 각 플랫폼 도구로 하세요.
 
 ## 언어
 
-명령줄은 영어와 한국어를 지원합니다. 우선순위는 `--lang en|ko`, 환경변수 `APPCAST_UPDATER_LANG`, 그다음 `LC_ALL`, `LC_MESSAGES`, `LANG` 입니다(값이 `ko` 로 시작하면 한국어, 아니면 영어). 이 문서의 `appcast` 출력은 한국어 화면이고, 영어 시스템에서 같은 줄을 보려면 `--lang ko` 를 붙입니다.
+명령줄은 영어와 한국어를 지원합니다. 우선순위는 `--lang en|ko`, 환경변수 `APPCAST_UPDATER_LANG`, 그다음 `LC_ALL`, `LC_MESSAGES`, `LANG` 입니다(값이 `ko` 로 시작하면 한국어, 아니면 영어). 이 문서의 `appcast` 출력은 한국어 화면이고, 영어 시스템에서 같은 줄을 보려면 `--lang ko` 를 붙입니다. 연습 예제(`dart run example/main.dart`)도 같은 규칙을 따릅니다.
 
 ```bash
 APPCAST_UPDATER_LANG=ko appcast check feed/appcast.xml --current 110 --os windows-x64
