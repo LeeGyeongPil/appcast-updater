@@ -21,7 +21,7 @@ import 'i18n.dart';
 import 'io_util.dart';
 
 /// Version printed by `appcast --version`. Keep in sync with pubspec.yaml.
-const String packageVersion = '0.2.0';
+const String packageVersion = '0.3.0';
 
 /// Exit codes.
 const int exitOk = 0;
