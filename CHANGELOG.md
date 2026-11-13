@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-13
+
+### Changed
+
+- The practice example (`example/main.dart`) now speaks English and Korean with the same precedence as the CLI: `--lang en|ko`, `APPCAST_UPDATER_LANG`, then `LC_ALL`, `LC_MESSAGES`, `LANG`. An unknown `--lang` value exits with code 2. English output is unchanged.
+- `README.ko.md` uses a Korean screenshot of the practice run.
+- No library or CLI behavior changed.
+
 ## [0.2.0] - 2026-11-13
 
 ### Added
@@ -67,7 +75,8 @@ No library or CLI behavior changed.
 - Legacy 96-byte private keys are recognized: public key and verification work, signing exits with code 3.
 - Offline practice example (`dart run example/main.dart`).
 
-[Unreleased]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/LeeGyeongPil/appcast-updater/compare/v0.1.0...v0.1.1
