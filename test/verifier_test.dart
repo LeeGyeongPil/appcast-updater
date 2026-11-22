@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:appcast_updater/appcast_updater.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -241,6 +242,78 @@ void main() {
     });
   });
 
+  group('relative enclosure URLs', () {
+    AppcastItem relItem(Release r, String url) => AppcastItem(
+        version: '130',
+        enclosure: Enclosure(
+            url: url,
+            length: r.item.enclosure.length,
+            edSignature: r.item.enclosure.edSignature));
+
+    test('next to a file:// feed: downloaded and verified', () async {
+      final src = tempDir();
+      final dst = tempDir();
+      final r = await makeRelease(src);
+      final file = await Updater(
+              feedUrl: src.uri.resolve('appcast.xml'),
+              publicKey: r.publicKey,
+              currentVersion: '120',
+              os: 'windows-x64')
+          .downloadAndVerify(relItem(r, 'Example-130.exe'), into: dst);
+      expect(file.readAsBytesSync(), r.file.readAsBytesSync());
+    });
+
+    test('an unparsable enclosure URL fails like before (FormatException)',
+        () async {
+      final r = await makeRelease(tempDir());
+      await expectLater(
+          Updater(
+                  feedUrl: Uri.parse('https://dl.example.com/appcast.xml'),
+                  publicKey: r.publicKey,
+                  currentVersion: '120',
+                  os: 'windows-x64',
+                  fetcher: _RecordingFetcher())
+              .downloadAndVerify(relItem(r, 'http://[bad'), into: tempDir()),
+          throwsFormatException);
+    });
+
+    test('against an https feed it resolves to https', () async {
+      final r = await makeRelease(tempDir());
+      final fetcher = _RecordingFetcher();
+      await Updater(
+              feedUrl: Uri.parse('https://dl.example.com/app/appcast.xml'),
+              publicKey: r.publicKey,
+              currentVersion: '120',
+              os: 'windows-x64',
+              fetcher: fetcher)
+          .downloadAndVerify(relItem(r, 'Example-130.exe'), into: tempDir())
+          .then<void>((_) {}, onError: (_) {});
+      expect(fetcher.requested.toString(),
+          'https://dl.example.com/app/Example-130.exe');
+    });
+
+    test('an https feed still cannot reach file://', () async {
+      final r = await makeRelease(tempDir());
+      final fetcher = _RecordingFetcher();
+      final updater = Updater(
+          feedUrl: Uri.parse('https://dl.example.com/app/appcast.xml'),
+          publicKey: r.publicKey,
+          currentVersion: '120',
+          os: 'windows-x64',
+          fetcher: fetcher);
+      // an absolute file:// value is rejected; a relative one stays https
+      await expectLater(
+          updater.downloadAndVerify(relItem(r, 'file:///etc/passwd'),
+              into: tempDir()),
+          throwsA(isA<DownloadException>()));
+      expect(fetcher.requested, isNull);
+      await updater
+          .downloadAndVerify(relItem(r, '/etc/passwd'), into: tempDir())
+          .then<void>((_) {}, onError: (_) {});
+      expect(fetcher.requested!.scheme, 'https');
+    });
+  });
+
   group('http', () {
     test('http:// is refused unless allowed', () async {
       final fetcher = Fetcher.auto();
@@ -373,3 +446,18 @@ void main() {
 /// connection attempt (no packet is sent for a refused URL).
 final Matcher refusesPlainHttp = throwsA(isA<DownloadException>()
     .having((e) => e.message, 'message', contains('refusing plain http')));
+
+class _RecordingFetcher implements Fetcher {
+  Uri? requested;
+
+  @override
+  Future<void> download(Uri uri, File destination,
+      {required int maxBytes}) async {
+    requested = uri;
+    throw DownloadException('recorded only');
+  }
+
+  @override
+  Future<Uint8List> fetchBytes(Uri uri, {int maxBytes = 5 * 1024 * 1024}) =>
+      throw UnimplementedError();
+}

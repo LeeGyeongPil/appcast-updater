@@ -21,7 +21,7 @@ import 'i18n.dart';
 import 'io_util.dart';
 
 /// Version printed by `appcast --version`. Keep in sync with pubspec.yaml.
-const String packageVersion = '0.3.0';
+const String packageVersion = '0.3.1';
 
 /// Exit codes.
 const int exitOk = 0;
@@ -271,6 +271,27 @@ class _Context {
       }
     }
     return _readFile(source);
+  }
+
+  /// The address a feed was read from; relative enclosure URLs resolve
+  /// against it.
+  Uri _feedBase(String source) {
+    final lower = source.toLowerCase();
+    if (lower.startsWith('http://') ||
+        lower.startsWith('https://') ||
+        lower.startsWith('file://')) {
+      return Uri.parse(source);
+    }
+    return File(source).absolute.uri;
+  }
+
+  /// The enclosure URL shown by `check`: resolved against the feed when it
+  /// parses, the original text when it is not a valid URI.
+  String _displayUrl(String source, AppcastItem item) {
+    final raw = item.enclosure.url;
+    final parsed = Uri.tryParse(raw);
+    if (parsed == null) return raw;
+    return _feedBase(source).resolve(parsed.toString()).toString();
   }
 
   int _intOption(ParsedArgs p, String name) {
@@ -531,7 +552,7 @@ class _Context {
     } else {
       out.writeln(m.t('check.update', {'label': item.label}));
       if (selection.critical) out.writeln(m.t('check.critical'));
-      out.writeln(m.t('check.file', {'url': item.enclosure.url}));
+      out.writeln(m.t('check.file', {'url': _displayUrl(source, item)}));
     }
     if (p.flag('--explain')) {
       if (selection.rejections.isNotEmpty)

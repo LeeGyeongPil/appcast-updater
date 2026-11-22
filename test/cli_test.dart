@@ -279,6 +279,33 @@ void main() {
       await SignedFeed.verify(File(feedPath).readAsBytesSync(), pub);
     });
 
+    test('check shows a relative file URL resolved against the feed', () async {
+      final dir = tempDir();
+      final feed = File('${dir.path}/appcast.xml')
+        ..writeAsStringSync(feedXml([
+          itemXml(version: '120', os: 'windows-x64').replaceFirst(
+              'https://downloads.example.com/Example-120.exe',
+              'Example-120.exe'),
+        ]));
+      final r = await cli(
+          ['check', feed.path, '--current', '100', '--os', 'windows-x64']);
+      expect(r.code, 0, reason: '$r');
+      expect(r.out, contains('File: ${dir.uri.resolve('Example-120.exe')}'));
+    });
+
+    test('check shows an unparsable enclosure URL as written', () async {
+      final dir = tempDir();
+      final feed = File('${dir.path}/appcast.xml')
+        ..writeAsStringSync(feedXml([
+          itemXml(version: '120', os: 'windows-x64').replaceFirst(
+              'https://downloads.example.com/Example-120.exe', 'http://[bad'),
+        ]));
+      final r = await cli(
+          ['check', feed.path, '--current', '100', '--os', 'windows-x64']);
+      expect(r.code, 0, reason: '$r');
+      expect(r.out, contains('File: http://[bad'));
+    });
+
     test('check picks the update and explains every other item', () async {
       await buildFeed();
       final r = await cli([

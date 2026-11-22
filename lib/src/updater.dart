@@ -110,7 +110,9 @@ class Updater {
   /// verification; on any failure nothing is left behind.
   Future<File> downloadAndVerify(AppcastItem item,
       {required Directory into, bool allowUnsigned = false}) async {
-    final url = Uri.parse(item.enclosure.url);
+    // A relative enclosure URL is resolved against the feed address, as
+    // Sparkle does. Absolute URLs come out unchanged.
+    final url = feedUrl.resolve(item.enclosure.url);
     // A remote feed must not make the client read local files. Only a feed
     // that itself lives on disk (file://) may point at file:// enclosures.
     if (url.scheme == 'file' && feedUrl.scheme != 'file') {
